@@ -28,3 +28,9 @@ Gender: male/female/unisex. Age: newborn/infant/toddler/kids/adult. UK sizes tre
 - Shopify Product Category and Google Product Category taxonomies differ; use exact valid values, never invented ones.
 - Studio/original CDN files must exist; application doesn't upload images to Shopify.
 - Data processing local to browser except Helper and optional keyword fetch.
+
+
+## v10 fixes
+- Manual field mapping persists across dropdown changes; Sheet # accepts Sheet / Sheet No / Sheet Number / Sheet Name; defaults Sheet1.
+- Taxonomy editor: enter exact Shopify and Google category paths/IDs by SKU prefix; browser localStorage persists overrides. Strict validation retained.
+- Compare At Price equals sale price when discount 0, per user request. Note Shopify may not show a crossed-out price when values match.
