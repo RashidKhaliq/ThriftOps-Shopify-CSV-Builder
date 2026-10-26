@@ -1,53 +1,30 @@
-# ThriftOps Shopify CSV Builder
+# ThriftOps Shopify CSV Builder v9
 
-Serverless browser application for converting Raw Input + optional ThriftOps Intelligence + Google Sheet Helper rules into Shopify product CSV.
+## Setup
+Deploy as **Cloudflare Pages** Git-connected project. Framework `None`, output directory `.`. Pages Functions `functions/api/helper.js` (Google Helper Sheet proxy) and `functions/api/suggest.js` (optional Autocomplete) are included. `workers.dev` Workers Static Assets deployment **does not** automatically expose Pages Functions. Local test: `npx wrangler pages dev .`.
 
-## Deploy to Cloudflare Pages
+## Inputs
+- Raw Input XLSX/CSV required; map fields.
+- BeThrifted Intelligence XLSX/CSV optional.
+- OTS Intelligence XLSX/CSV optional.
+- Helper Rules loaded from Google Sheet or XLSX fallback.
+- Helper **Code** matches SKU prefix before first hyphen. `Category Types`, `Season`, `Gender`, `RK Types` retained.
+- **Required for strict taxonomy**: add columns `Shopify Product Category`, `Google Product Category` to Google Helper Sheet, with valid Shopify taxonomy and Google taxonomy paths or IDs for each SKU prefix. Unmapped rows blocked from export. `Age Group` optional override.
 
-1. Create new Cloudflare Pages project.
-2. Upload `index.html` or connect this folder through GitHub.
-3. No build command required.
-4. Output directory: `/`.
+## Dual-store exports
+- Owner Mode `BeThrifted` / `OTS`: Supplier equals owner for BOTH CSVs; owner original image CDN used.
+- Store studio image URLs use respective CDN and `SKU_studio.jpg`, `SKU_2_studio.jpg` ... `SKU_5_studio.jpg`; original owner image appended as final image row. Shopify CSV first row includes product data and first studio image, subsequent rows contain only Handle + Image Src/Position/Alt Text. Preview displays Original / BeThrifted / OTS.
+- BeThrifted title `Brand (SKU)`; description BeThrifted AI Details paragraph only.
+- OTS title `Brand (SKU) AI Type`, fallback Helper Category Types. OTS description Color, Color Details, Fabric, Measurements, raw Category, AI Type, AI Details, Styling Tips, Pairing Tips, Notable; no Condition.
+- Both use same Shopify field headers, 19 custom metafields, pricing rules, Google Shopping columns, and distinct SEO templates.
+- Export either CSV or ZIP with both CSVs. Strict validation blocks export until taxonomy and required data mapped.
+- SEO edit controls for selected SKU + store. Google Autocomplete optional, unofficial and may fail; no API key needed.
 
-## Rules
+## Google Shopping
+Gender: male/female/unisex. Age: newborn/infant/toddler/kids/adult. UK sizes treated as adult only with adult Gender context; Boys/Girls default kids; 14+ years adult. Condition `used`. MPN and Custom Product blank (don't fabricate manufacturer identifiers). Custom Labels: season, condition grade, supplier, category, price band. Google Shopping legacy CSV columns may require separate feed mapping for Google & YouTube channel.
 
-- Raw Input required; ThriftOps optional.
-- Numeric Raw Input Price has priority.
-- If Raw price missing/non-numeric, ThriftOps Suggested Price is used.
-- Tier/Condition minimums enforced for suggested pricing.
-- UNKNOWN/CUT LABEL defaults Tier 2 when AI Tier unavailable.
-- Increase first, round upward to Rs.50.
-- Discount second, round upward to Rs.50.
-- Discount > 0: pre-discount increased price becomes Compare At Price.
-- Longest SKU prefix match wins.
-- Studio image: `[SKU]_studio.jpg`; original image: `[SKU]_original.jpg`.
-
-## Note
-
-App tries live public Google Sheet CSV first. If browser/CORS/network blocks it, upload `Helper.xlsx` in Helper Rules input.
-
-## Rule updates
-- Google Helper category heading: `Category Types` (legacy `New Types` also accepted).
-- Description always shows Helper `Category Types` as first Type, even when ThriftOps is uploaded.
-- Tags include current date (`DD-Mmm-YY`), `Sheet1`, Supplier, Helper Season, Helper RK Type, and Wholesaler.
-- Default Supplier: `Rashid`; default Wholesaler: `Waheed` when Raw Input values are blank.
-- `Season (product.metafields.custom.season)` comes from Helper Season.
-- `RK_Type (product.metafields.custom.rk_type)` comes from Helper RK Type.
-
-## v6 fixes
-- Shopify Type and first description Type use Helper Category Types, matched by exact SKU prefix before hyphen.
-- ThriftOps AI Type used only in AI description and title when present; otherwise title is Brand (SKU).
-- Unmatched SKU prefix shows red UNMAPPED SKU CODE in preview and ERROR status; no inferred Type.
-
-
-## v7: Live Google Sheet sync
-Deploy full folder to Cloudflare Pages **using Git integration or Wrangler** so `functions/api/helper.js` runs as Pages Function. Static drag-and-drop HTML alone does NOT deploy function routes.
-
-Commands (from project directory):
-```sh
-npx wrangler pages deploy . --project-name thriftops-shopify-builder
-```
-
-The app calls same-origin `/api/helper`, which fetches the published Google Sheet as CSV, parses duplicate headers, validates Code/Category Types, and returns JSON. Refresh Google Sheet Rules reloads latest values. On error, Helper.xlsx upload remains fallback.
-
-Test: `https://YOUR-PAGES-DOMAIN/api/helper` should return JSON containing `rows`. If 404 or HTML, Pages Function was not deployed. Public Google Sheet must remain published to web.
+## Notes
+- Verify Shopify CSV field compatibility and metafield definitions against store before production imports.
+- Shopify Product Category and Google Product Category taxonomies differ; use exact valid values, never invented ones.
+- Studio/original CDN files must exist; application doesn't upload images to Shopify.
+- Data processing local to browser except Helper and optional keyword fetch.
