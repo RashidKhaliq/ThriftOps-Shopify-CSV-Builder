@@ -34,3 +34,14 @@ Gender: male/female/unisex. Age: newborn/infant/toddler/kids/adult. UK sizes tre
 - Manual field mapping persists across dropdown changes; Sheet # accepts Sheet / Sheet No / Sheet Number / Sheet Name; defaults Sheet1.
 - Taxonomy editor: enter exact Shopify and Google category paths/IDs by SKU prefix; browser localStorage persists overrides. Strict validation retained.
 - Compare At Price equals sale price when discount 0, per user request. Note Shopify may not show a crossed-out price when values match.
+
+
+## v11 Owner and admin tags
+Both Shopify exports include product owner tag `Supplier_BeThrifted` or `Supplier_OTS` based on Owner Mode (not destination store). Also include `StoreRole_Owner` or `StoreRole_Reseller` relative to exported store, plus `Inventory_OneOfOne` for single-quantity thrift inventory. Existing descriptive tags retained. Shopify tags are not inherently admin-only: storefront visibility depends on theme, collection filters, search, and integrations.
+
+
+## v12 Taxonomy Dropdowns
+- Official Shopify Standard Product Taxonomy and Google Product Taxonomy retrieved via Cloudflare Pages `/api/taxonomies`.
+- Searchable dropdowns for each SKU prefix. No guessed categories; invalid manual entries rejected when official lists load.
+- Official catalog loading needs internet and deployed Pages Functions or `npx wrangler pages dev .`.
+- Browser localStorage retains selections. If catalog fetch fails, manual entry remains available and should be verified.
