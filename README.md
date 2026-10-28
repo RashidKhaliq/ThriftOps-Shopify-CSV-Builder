@@ -45,3 +45,12 @@ Both Shopify exports include product owner tag `Supplier_BeThrifted` or `Supplie
 - Searchable dropdowns for each SKU prefix. No guessed categories; invalid manual entries rejected when official lists load.
 - Official catalog loading needs internet and deployed Pages Functions or `npx wrangler pages dev .`.
 - Browser localStorage retains selections. If catalog fetch fails, manual entry remains available and should be verified.
+
+
+## v13: Grouped Helper Category Types + Official Taxonomy Fix
+- OTS HTML `Category:` uses **Helper Category Types** (identical to Shopify `Type`), not raw Category.
+- Taxonomy editor groups by **distinct Helper Category Types**; SKU prefixes of same type share a single mapping. Saved in browser `thriftops_category_taxonomy_v13`. Older code-level overrides retained as fallback.
+- Shopify release `categories.en.txt.gz` parsed using official `gid://shopify/TaxonomyCategory/... : path` format. If release download is blocked, fall back to official repository raw text. Google official taxonomy path/id downloaded separately. Partial list availability supported.
+- Google SEO Suggestions editor appears once per distinct uploaded Helper Category Type. Each category has its own editable query, Fetch, suggestion selection, and Apply; saved in `thriftops_category_keywords_v13`. Selected keyword affects SEO descriptions of products within that category in both store CSVs using distinct templates. Category-specific manual SEO edits still take precedence.
+- No automatic taxonomy guessing. Strict unmapped export blocking remains.
+- Deploy complete project under Cloudflare Pages Functions; ensure `/api/taxonomies` and `/api/suggest` routes exist.
