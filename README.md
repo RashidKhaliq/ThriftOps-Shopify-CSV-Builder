@@ -54,3 +54,14 @@ Both Shopify exports include product owner tag `Supplier_BeThrifted` or `Supplie
 - Google SEO Suggestions editor appears once per distinct uploaded Helper Category Type. Each category has its own editable query, Fetch, suggestion selection, and Apply; saved in `thriftops_category_keywords_v13`. Selected keyword affects SEO descriptions of products within that category in both store CSVs using distinct templates. Category-specific manual SEO edits still take precedence.
 - No automatic taxonomy guessing. Strict unmapped export blocking remains.
 - Deploy complete project under Cloudflare Pages Functions; ensure `/api/taxonomies` and `/api/suggest` routes exist.
+
+
+v14: Error breakdown by reason, downloadable per-store error CSV, UK adult clothing size recognition, one-size adult fallback. Strict taxonomy remains default. Enter exact taxonomy paths in taxonomy mapping and Save.
+
+
+## v15
+- Export no longer blocked by validation flags; warning details remain in preview and downloadable error report.
+- Explicit Raw Input Age Group takes priority and bypasses size inference.
+- If both Age Group and actual Raw Input Size empty, Google Shopping / Age Group remains blank (no inference from synthetic One Size fallback).
+- With size available, infer age group from size and gender when explicit Age Group missing.
+- Shopify may reject products with other missing required fields; review flagged report before importing.
